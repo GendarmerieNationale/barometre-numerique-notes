@@ -1,0 +1,129 @@
+\documentclass[11pt,a4paper,twocolumn,USenglish]{article}
+
+\usepackage[top=.7in,left=.7in,right=.7in,bottom=1.1in]{geometry}
+\usepackage{setspace}
+
+\usepackage{fourier}
+\usepackage[USenglish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{authblk}
+
+\usepackage[hyphens]{url}
+\usepackage[bookmarks, colorlinks, breaklinks]{hyperref}
+\usepackage[usenames,dvipsnames,table]{xcolor}
+\usepackage{colortbl}
+
+\title{Notes on building an open data portal for a French police force}
+
+\setlength{\columnsep}{.75cm}
+
+\author[1,2]{Antoine Mazi\`eres\thanks{antoine.mazieres@gmail.com}}
+\author[1,2]{Alexandre Thomas\thanks{hi@alxthm.com}}
+\author[1,2]{Romuald De la Cruz\thanks{romuald.de-la-cruz@gendarmerie.interieur.gouv.fr}}
+\affil[1]{Gendarmerie Nationale, General Directorate (\textsc{dggn}), Issy-les-Moulineaux, France.}
+\affil[2]{Public Interest Entrepreneurs program (\textsc{eig}), Interministerial Directorate of Digital Affairs (\textsc{dinum}), Paris, France.}
+\renewcommand\Affilfont{\itshape\small}
+
+\usepackage{datetime}
+
+\newdateformat{monthyeardate}{\monthname[\THEMONTH], \THEYEAR}
+
+\date{
+\monthyeardate\today\\ \vspace{.5cm}
+\href{https://www.gendarmerie.interieur.gouv.fr/barometre-numerique/}{\small{\textsc{gendarmerie.interieur.gouv.fr/barometre-numerique}}}
+}
+
+\begin{document}
+
+\hypersetup{linkcolor= MidnightBlue,citecolor= MidnightBlue,filecolor=black,urlcolor= MidnightBlue}
+
+
+\maketitle
+
+\begin{abstract}
+
+\href{https://www.gendarmerie.interieur.gouv.fr/barometre-numerique/}{\emph{Le Baromètre Numérique}} is a dedicated open data portal developed by the French \emph{Gendarmerie Nationale}. It provides data with respect to digital services maintained by or related to this civil service. These notes document some background elements and development directions of this project.  We aim to update these notes as the project evolve.
+
+\vspace{1em}
+\textbf{Keywords}: open data; open government; police; gendarmerie; France\vspace{1em}
+
+\end{abstract}
+
+
+\section*{Context}
+
+\subsection*{Open government}
+
+By the end of the 1990's, the significance of the Internet as a governance platform started to be widely acknowledged, and considered through various analogies with emerging open source and open data communities. Several public initiatives throughout the 2000's led to the \emph{Open Government Partnership}\footnote{\url{https://www.opengovpartnership.org/}} in 2011\footnote{Joined by France in 2014: \url{https://www.etalab.gouv.fr/gouvernement-ouvert/}} which brought together 77 countries around principles and commitments towards digital transformation, bearing on a number of areas such as governance, justice, citizenship, health and the fight against corruption. Broadly speaking, open government endeavors aim at adapting democratic principles of public accountability and transparency into the digital age, and empowering citizens participation and contribution to the public decision making process.
+
+Though generally supported by government doctrine and public opinion, these axioms still have to overcome numerous cultural and practical challenges to be implemented within the structures and processes of every administration and political entity.
+
+
+\subsection*{Public tech fellowships}
+
+One of the many pitfalls to navigate is the tight tech labour market where big tech and startup companies seem to have a greater advantage in alluring the relevant workforce, such as programmers, designers, data scientists and jurists. To get around the lack of manpower, a number of so-called \emph{public tech fellowships} have been set up to attract necessary talents. Pioneered in 2012 by the \emph{Presidential Innovation Fellows} program\footnote{\url{https://presidentialinnovationfellows.gov/}} in the United States, it has been followed by likely minded initiatives such as  the \emph{Public Interest Entrepreneurs} program\footnote{\url{https://eig.etalab.gouv.fr/}} in France (2017, \emph{Entrepreneurs d'Intérêt Général}, \textsc{eig}),  \emph{Tech4Germany}\footnote{\url{https://tech.4germany.org/}} in Germany (2018) and the \emph{Innovation Fellowships}\footnote{\url{https://no10innovationfellows.campaign.gov.uk/}} in the United Kingdom (2020)\footnote{The similarities between these various programs have been discussed by several members of their management teams during an international panel at the \textsc{eig} 4\textsuperscript{th} cohort \emph{demo day}: \url{https://www.dailymotion.com/video/x82ilbt}}.
+
+These institutional set-ups are generally open through a competitive selection for well-funded short-term contracts with the mandate to swiftly explore and prototype high-impact services with a strong use of digital tools and methods. Participants usually have a high-level reporting line which contribute to the program prestige while helping to ease the relation with the administrations involved in the project.
+
+The open data portal described here was developed in the context of the 5\textsuperscript{th} cohort of the \emph{Entrepreneur d'Intérêt Général} program, between September and June 2022, at the \emph{Gendarmerie Nationale}.
+
+
+\subsection*{Gendarmerie Nationale}
+
+\emph{Gendarmerie Nationale} (\textsc{gn}) is, along with \emph{Police Nationale} (\textsc{pn}), one of the two main police forces in France. While \textsc{pn} has authority mainly in big cities, \textsc{gn} is the default police force in most of the rural and suburban areas which are less populated. As a result, \textsc{gn}'s authority reaches, like \textsc{pn}, around 50\% of the French population but covers 95\% of the French territory.
+
+The Gendarmerie inherits from policing institutions as far as from the middle-age (\emph{Maréchaussée}), making it one of the most ancient French institutions. It has approximately $100,000$ agents, mostly under military status, while being, since 2009, under the authority of the Minister of Home Affairs (\emph{Ministère de l'Intérieur}).
+
+With the digitalisation of their activities since the early 2000's, \textsc{gn} has gained a certain visibility in several open source communities by implementing on an institution-wide scale tools such as \emph{Open Office} and \emph{Linux}\footnote{\url{https://ubuntu.com/blog/la-gendarmerie-nationale-upgrades-85000-pcs-to-ubuntu-desktop-edition}} and making contributions to several codebases\footnote{Among which \emph{LemonLDAP} and \emph{OCS Inventory}.}.
+
+
+\section*{Project}
+
+\subsection*{From data intelligence to data transparency}
+
+Over the course of the last decade, \textsc{gn} has developed a number of digital services to interact with French citizens, such as a fully featured website, recruitment processes, a 24/7 online chat and numerous interfaces to fill administrative forms related to frauds or offences. The underlying systems have been developed along the way by different teams relying on a diverse set of technologies, sometimes with the support of external companies and third-party services.
+
+The initial project\footnote{\url{https://eig.etalab.gouv.fr/defis/cyberimp-ct/}} joined the \textsc{eig} program with the perspective of developing a data intelligence platform for internal use. It entailed gathering and analyzing data from multiple sources in order to identify and represent relevant indicators for the national and territorial commands to monitor the above-mentioned digital services.
+
+For a couple of months, we met with all the teams involved in the 15 data sources considered by the project. This \emph{data diplomacy} helped us to lay down the information available and the technical challenges to process it. What appeared is that, first, only aggregated data would be available in the short-term, yielding predefined variables that would make it difficult to craft indicators tailored to the command expectations. Second, and more importantly, that the data protection regulation implies a formal approval from the \emph{National Commission on Informatics and Liberty} (\textsc{cnil}) in order to centralize several data sources for a new purpose. This approval takes time and couldn't be sought in the short-term.
+
+However, we realized that, given that we trim the available data from personal information, the legal hassle to process it for internal use would be equivalent to the one of releasing the data publicly. Therefore, instead of crafting a internal platform with limited value for the interested parties, we could endeavor developing a dedicated open data portal for \textsc{gn}.
+
+
+\subsection*{Open data \& police}
+
+As it joined the \emph{Open Government Partnership} in 2014, the French government released two consecutive \emph{National Action Plans} (2015-2017, 2018-2020)\footnote{\url{https://www.etalab.gouv.fr/plan-daction-national/}} to lay down the principles on which it would foster a ``transparent and collaborative government''. In 2016, the \emph{Law for a Digital Republic}\footnote{\emph{Loi n\textsuperscript{o}2016-1321 pour une République numérique}: \url{https://www.legifrance.gouv.fr/dossierlegislatif/JORFDOLE000031589829/}} enforced some of these commitments, including making it mandatory for administrations to publish their data.
+
+One caveat to this obligation is to protect personal information and the proper functioning of the administration. Police forces are both processing sensitive personal information and their activity require a certain amount of discretion if not secrecy, usually enforced by law. Therefore, police forces have generally initiated their journey to opening their data with caution, and there are not as many of them throughout the world who have opened their data as other types of civil services may have.
+
+However, numerous initiatives are being carried out, such as the \emph{Police Data Initiative}\footnote{\url{https://www.policedatainitiative.org/}} in the \textsc{usa} which gathers the publication of 120 police forces -- more than 200 datasets -- and puts forward the open-ended ``purposes of enhancing trust, understanding, innovation, and the co-production of public safety''. In the \textsc{uk}, a national dedicated platform\footnote{\url{https://data.police.uk/}} offers both datasets and \textsc{api}s which enable users to access programmatically the latest information about a range of topics spanning from street-level crimes to neighborhood policing priorities. Other salient instances include the platforms from Toronto\footnote{\url{https://data.torontopolice.on.ca/}} and New Zealand\footnote{\url{https://policedata.nz/}} police forces.
+
+In France, since 2019, administrations must publish their data on \href{https://data.gouv.fr/}{data.gouv.fr} which -- as of today -- indexes more than $40,000$ datasets, several hundreds of which are related to police forces and published by the statistical service of the Minister of home affairs\footnote{\textsc{ssmsi}, \url{https://www.interieur.gouv.fr/Interstats/Actualites}}.
+
+
+\subsection*{Target audiences \& interfaces}
+
+We developed the \emph{Baromètre Numérique} bearing in mind a number of possible audiences and use cases, among which:
+
+\begin{itemize}
+  \item Citizens willing to know more about the underlying activity of the digital services they are using to interact with an administration.
+  \item Journalists and researchers willing to report on these digital services or the underlying facts their activity are a proxy to.
+  \item Other administrations or companies willing to embed this data into their own services.
+  \item \textsc{gn}'s agents and services themselves as a way to evaluate and emphasize their work.
+\end{itemize}
+
+Meeting, at least partially, the requirements of these different use cases requires to avoid some commons options considered for data portals, for instance: 
+
+\begin{itemize}
+    \item A list of datasets available for download along with a short description which tends to require that the user will have the time and knowledge to exploit the data with some specialized software.
+    \item A complex dashboard with numerous and complex visualizations which might necessitate a certain amount of expertise to interpret the data or even to identify the topic at hand.
+\end{itemize}
+
+In order to try meet various degrees of police and tech savviness, we decided to provide both a minimalist visual interface and a programming interface (\textsc{api}).
+
+Each page deals with only one digital service and is composed of simple isolated blocks, starting with a highlighted key figure and description. The whole site is used composed of only 3 types of visualisation, an interactive map of France and 2 bar charts, one for categories and one for timelines. A simple tag system enables the user to modify the underlying query for a set of different periods (week, month, year). A simple calendar to manage this input should enable finer queries from the web interface.
+
+The \textsc{api} enables advanced usages. Similarly to a static file or a database, it allows users to access all the data but adds also the possibility to programmatically access and embed the specific up-to-date elements from a third-party program or website. However, this interface doesn't combine well with the use of traditional spreadsheet softwares and we will automate promptly regular dumps of the data on the platform \href{https://data.gouv.fr}{data.gouv.fr}.
+
+
+\end{document}
